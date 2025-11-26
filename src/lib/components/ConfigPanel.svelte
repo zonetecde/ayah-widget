@@ -19,7 +19,7 @@
 	let reciter: number | null = $state(7);
 </script>
 
-<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px]">
+<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px] overflow-auto">
 	<h2 class="text-2xl font-semibold mb-4">Configuration</h2>
 
 	<TextInput label="Container Id" bind:value={containerId} />
@@ -30,7 +30,7 @@
 
 	<ReciterSelector bind:reciter />
 
-	<div class="flex flex-col mb-4">
+	<div class="flex flex-col mb-4 mt-4">
 		<label class="mb-2 font-medium text-gray-700" for="theme-select">Theme</label>
 		<select
 			id="theme-select"
