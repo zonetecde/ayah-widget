@@ -44,6 +44,41 @@
     apiUrl.searchParams.set('showTranslatorNames', config.showTranslatorNames || 'false');
     apiUrl.searchParams.set('showQuranLink', config.showQuranLink || 'false');
 
+    // Wire up the audio player interactions after HTML injection
+    function wireWidgetInteractions(root) {
+        if (!root) return;
+        
+        const audioBtn = root.querySelector('[data-audio-button]');
+        const audioEl = root.querySelector('[data-audio-element]');
+        const playIcon = root.querySelector('[data-play-icon]');
+        const pauseIcon = root.querySelector('[data-pause-icon]');
+
+        if (audioBtn && audioEl) {
+            const update = function() {
+                const playing = !audioEl.paused && !audioEl.ended;
+                audioBtn.setAttribute('aria-pressed', playing ? 'true' : 'false');
+                if (playIcon && pauseIcon) {
+                    playIcon.style.display = playing ? 'none' : 'inline-flex';
+                    pauseIcon.style.display = playing ? 'inline-flex' : 'none';
+                }
+            };
+
+            audioBtn.addEventListener('click', function() {
+                if (audioEl.paused) {
+                    audioEl.play();
+                } else {
+                    audioEl.pause();
+                }
+            });
+
+            audioEl.addEventListener('play', update);
+            audioEl.addEventListener('pause', update);
+            audioEl.addEventListener('ended', update);
+
+            update();
+        }
+    }
+
     // Fetch the HTML from the API
     fetch(apiUrl.toString())
         .then(response => {
@@ -55,6 +90,7 @@
         .then(data => {
             if (data.success && data.html) {
                 container.innerHTML = data.html;
+                wireWidgetInteractions(container);
             } else {
                 throw new Error(data.error || 'Failed to load widget');
             }

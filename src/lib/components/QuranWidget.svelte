@@ -22,23 +22,10 @@
 	const translationCount = verse.translations?.length || 0;
 
 	let showMenu = $state(false);
-	let audioPlaying = $state(false);
-	let audioElement: HTMLAudioElement | null = null;
 
 	function copyVerse() {
 		const text = `${verse.text_uthmani}\n\n${verse.translations?.map((t) => t.text).join('\n\n') || ''}`;
 		navigator.clipboard.writeText(text);
-	}
-
-	function toggleAudio() {
-		if (audioElement) {
-			if (audioPlaying) {
-				audioElement.pause();
-			} else {
-				audioElement.play();
-			}
-			audioPlaying = !audioPlaying;
-		}
 	}
 </script>
 
@@ -111,8 +98,10 @@
 			<div style="display: flex; gap: 8px; position: relative;">
 				{#if options.enableAudio && audioUrl}
 					<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+					<!-- svelte-ignore a11y_consider_explicit_label -->
 					<button
-						onclick={toggleAudio}
+						data-audio-button
+						type="button"
 						style="
             width: 36px;
             height: 36px;
@@ -126,19 +115,18 @@
             justify-content: center;
             transition: background-color 0.2s;
           "
-						onmouseover={(e) => (e.currentTarget.style.backgroundColor = borderColor)}
-						onmouseout={(e) => (e.currentTarget.style.backgroundColor = hoverBg)}
 					>
-						{#if audioPlaying}
+						<span data-play-icon>
+							<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+								<path d="M5 3v10l8-5z" />
+							</svg>
+						</span>
+						<span data-pause-icon style="display: none;">
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
 								<rect x="4" y="3" width="3" height="10" />
 								<rect x="9" y="3" width="3" height="10" />
 							</svg>
-						{:else}
-							<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-								<path d="M5 3v10l8-5z" />
-							</svg>
-						{/if}
+						</span>
 					</button>
 				{/if}
 
@@ -366,7 +354,7 @@
 
 		<!-- Hidden audio element -->
 		{#if options.enableAudio && audioUrl}
-			<audio bind:this={audioElement} src={audioUrl} onended={() => (audioPlaying = false)}></audio>
+			<audio data-audio-element src={audioUrl}></audio>
 		{/if}
 	</div>
 </div>
