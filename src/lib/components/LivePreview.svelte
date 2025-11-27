@@ -1,68 +1,68 @@
 <script lang="ts">
 	import { preferences } from '$lib/runes/main.svelte';
-	import { onMount } from 'svelte';
 
 	let widgetContainer: HTMLDivElement;
+	let isLoading = $state(false);
 
-	onMount(() => {
-		// Load the quran-embed.js script
-		const script = document.createElement('script');
-		script.src = '/quran-embed.js';
-		script.setAttribute('data-quran-target', preferences.containerId);
-		script.setAttribute('data-quran-ayah', `${preferences.surah}:${preferences.ayah}`);
-		script.setAttribute(
-			'data-quran-translation-ids',
-			preferences.translations.map((t) => t.id).join(',')
+	async function loadWidget() {
+		if (!widgetContainer) return;
+
+		const target = widgetContainer.querySelector(`#${preferences.containerId}`);
+		if (!target) return;
+
+		isLoading = true;
+		target.innerHTML =
+			'<div style="padding: 20px; text-align: center; color: #666;">Loading Quran verse...</div>';
+
+		// Build API URL
+		const apiUrl = new URL('/api/widget', window.location.origin);
+		apiUrl.searchParams.set('ayah', `${preferences.surah}:${preferences.ayah}`);
+		apiUrl.searchParams.set(
+			'translations',
+			preferences.translations.map((t) => t.id).join(',') || '20'
 		);
-		script.setAttribute('data-quran-reciter-id', preferences.reciter?.toString() || '');
-		script.setAttribute('data-quran-audio', preferences.enableAudio.toString());
-		script.setAttribute('data-quran-word-by-word', preferences.enableWbwTranslation.toString());
-		script.setAttribute('data-quran-theme', preferences.theme);
-		script.setAttribute(
-			'data-quran-show-translator-names',
-			preferences.showTranslatorName.toString()
-		);
-		script.setAttribute('data-quran-show-quran-link', preferences.showQuranLink.toString());
-		script.async = true;
+		apiUrl.searchParams.set('reciter', preferences.reciter?.toString() || '7');
+		apiUrl.searchParams.set('audio', preferences.enableAudio.toString());
+		apiUrl.searchParams.set('wbw', preferences.enableWbwTranslation.toString());
+		apiUrl.searchParams.set('theme', preferences.theme);
+		apiUrl.searchParams.set('showTranslatorNames', preferences.showTranslatorName.toString());
+		apiUrl.searchParams.set('showQuranLink', preferences.showQuranLink.toString());
 
-		widgetContainer.appendChild(script);
-
-		return () => {
-			// Cleanup: remove script when component unmounts
-			if (script.parentNode) {
-				script.parentNode.removeChild(script);
+		try {
+			const response = await fetch(apiUrl.toString());
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
-		};
-	});
+			const data = await response.json();
 
-	// Reactive effect to update the widget when preferences change
-	$effect(() => {
-		// Trigger re-render when preferences change
-		const target = document.getElementById(preferences.containerId);
-		if (target) {
-			// Clear and re-initialize the widget
-			target.innerHTML = '';
-
-			// Update script attributes
-			const scripts = widgetContainer.querySelectorAll('script');
-			scripts.forEach((script) => {
-				script.setAttribute('data-quran-target', preferences.containerId);
-				script.setAttribute('data-quran-ayah', `${preferences.surah}:${preferences.ayah}`);
-				script.setAttribute(
-					'data-quran-translation-ids',
-					preferences.translations.map((t) => t.id).join(',')
-				);
-				script.setAttribute('data-quran-reciter-id', preferences.reciter?.toString() || '');
-				script.setAttribute('data-quran-audio', preferences.enableAudio.toString());
-				script.setAttribute('data-quran-word-by-word', preferences.enableWbwTranslation.toString());
-				script.setAttribute('data-quran-theme', preferences.theme);
-				script.setAttribute(
-					'data-quran-show-translator-names',
-					preferences.showTranslatorName.toString()
-				);
-				script.setAttribute('data-quran-show-quran-link', preferences.showQuranLink.toString());
-			});
+			if (data.success && data.html) {
+				target.innerHTML = data.html;
+			} else {
+				throw new Error(data.error || 'Failed to load widget');
+			}
+		} catch (error) {
+			console.error('Error loading widget:', error);
+			target.innerHTML =
+				'<div style="padding: 20px; background-color: #fee; border: 1px solid #fcc; border-radius: 4px; color: #c33;">Error loading Quran verse. Please try again later.</div>';
+		} finally {
+			isLoading = false;
 		}
+	}
+
+	// Load widget when preferences change
+	$effect(() => {
+		// Track all preferences to trigger reload
+		preferences.surah;
+		preferences.ayah;
+		preferences.translations;
+		preferences.reciter;
+		preferences.enableAudio;
+		preferences.enableWbwTranslation;
+		preferences.theme;
+		preferences.showTranslatorName;
+		preferences.showQuranLink;
+
+		loadWidget();
 	});
 </script>
 

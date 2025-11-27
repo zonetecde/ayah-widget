@@ -1,0 +1,68 @@
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { render } from 'svelte/server';
+import QuranWidget from '$lib/components/QuranWidget.svelte';
+import type { Verse, WidgetOptions } from '$lib/types/quran';
+
+const API_BASE = 'https://api.quran.com/api/v4';
+
+export const GET: RequestHandler = async ({ url }) => {
+	// Get request parameters
+	const ayah = url.searchParams.get('ayah') || '2:255';
+	const translationIds = url.searchParams.get('translations') || '20';
+	const reciterId = url.searchParams.get('reciter') || '7';
+	const enableAudio = url.searchParams.get('audio') === 'true';
+	const enableWbw = url.searchParams.get('wbw') === 'true';
+	const theme = (url.searchParams.get('theme') || 'light') as 'light' | 'dark';
+	const showTranslatorNames = url.searchParams.get('showTranslatorNames') === 'true';
+	const showQuranLink = url.searchParams.get('showQuranLink') === 'true';
+
+	try {
+		// Build Quran.com API URL
+		const apiUrl = new URL(`${API_BASE}/verses/by_key/${ayah}`);
+		apiUrl.searchParams.set('words', 'true');
+		apiUrl.searchParams.set('language', 'en');
+		apiUrl.searchParams.set('fields', 'text_uthmani');
+		apiUrl.searchParams.set('translations', translationIds);
+		apiUrl.searchParams.set('audio', reciterId);
+		apiUrl.searchParams.set(
+			'word_fields',
+			'verse_key,location,text_uthmani,translation,transliteration,audio_url'
+		);
+
+		// Fetch from Quran.com API
+		const response = await fetch(apiUrl.toString());
+		if (!response.ok) {
+			throw new Error(`API error: ${response.status}`);
+		}
+
+		const data = await response.json();
+		const verse: Verse = data.verse;
+
+		// Widget options
+		const options: WidgetOptions = {
+			enableAudio,
+			enableWbw,
+			theme,
+			showTranslatorNames,
+			showQuranLink,
+			ayah
+		};
+
+		// Render Svelte component server-side with svelte/server
+		const result = render(QuranWidget, { props: { verse, options } });
+		const html = result.body;
+
+		return json({ html, success: true });
+	} catch (error) {
+		console.error('Error fetching verse:', error);
+		return json(
+			{
+				html: '<div style="color: red; padding: 20px;">Error loading verse. Please try again.</div>',
+				success: false,
+				error: error instanceof Error ? error.message : 'Unknown error'
+			},
+			{ status: 500 }
+		);
+	}
+};
