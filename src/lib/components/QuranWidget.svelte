@@ -19,6 +19,7 @@
 	const iconColor = isDark ? '#cbd5e0' : '#4a5568';
 
 	const audioUrl = verse.audio?.url ? `https://verses.quran.com/${verse.audio.url}` : null;
+	const translationCount = verse.translations?.length || 0;
 
 	let showMenu = $state(false);
 	let audioPlaying = $state(false);
@@ -230,7 +231,7 @@
           display: flex;
           flex-wrap: wrap;
           gap: 8px;
-          margin-bottom: 24px;
+          margin-bottom: {translationCount ? '24px' : '0'};
           direction: rtl;
           text-align: right;
           font-size: 32px;
@@ -281,7 +282,7 @@
           line-height: 2;
           text-align: right;
           direction: rtl;
-          margin-bottom: 24px;
+          margin-bottom: {translationCount ? '24px' : '0'};
           font-family: 'UthmanicHafs', 'Traditional Arabic', 'Arabic Typesetting', 'Scheherazade', serif;
         "
 				>
@@ -290,7 +291,7 @@
 			{/if}
 
 			<!-- Translations -->
-			{#if verse.translations && verse.translations.length > 0 && options.hasAnyTranslations}
+			{#if translationCount > 0 && verse.translations}
 				<div style="margin-top: 24px;">
 					{#each verse.translations as translation}
 						<div
