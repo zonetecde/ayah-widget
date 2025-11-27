@@ -20,11 +20,15 @@
 			globalState.loadSurahs().then(() => {
 				selectedSurah = globalState.surahs[1];
 			});
+		} else {
+			// Initialize selectedSurah based on current surah value
+			selectedSurah = globalState.surahs.find((s) => s.id === surah) || globalState.surahs[1];
 		}
 	});
 
+	// Update surah when selectedSurah changes, but avoid infinite loops
 	$effect(() => {
-		if (selectedSurah) {
+		if (selectedSurah && selectedSurah.id !== surah) {
 			surah = selectedSurah.id;
 		}
 	});
@@ -39,6 +43,7 @@
 			<div class="grid grid-cols-2 gap-x-2">
 				<select
 					bind:value={selectedSurah}
+					onchange={() => (ayah = 1)}
 					class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
 				>
 					<option disabled selected value={null}>Select Surah</option>

@@ -1,94 +1,70 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { API_BASE, globalState } from '$lib/runes/main.svelte';
+	import { preferences } from '$lib/runes/main.svelte';
 
-	type VerseResponse = {
-		verse: {
-			text_uthmani?: string;
-			translations?: { text: string }[];
-		};
-	};
+	let widgetContainer: HTMLDivElement;
+	let scriptElement: HTMLScriptElement | null = null;
 
-	let loading = $state(false);
-	let error: string | null = $state(null);
-	let arabicText = $state('');
-	let translationText = $state('');
+	function loadWidget() {
+		if (!widgetContainer) return;
 
-	let abortController: AbortController | null = null;
-
-	const translationIds = $derived(() =>
-		globalState.translations.length > 0 ? globalState.translations.map((t) => t.id).join(',') : '20'
-	);
-	const verseKey = $derived(() => `${globalState.surah}:${globalState.ayah}`);
-	const fetchKey = $derived(() => `${verseKey}|${translationIds}`);
-
-	async function fetchVerse(key: string, translationsParam: string) {
-		// Cancel any in-flight request to avoid overlaps
-		if (abortController) {
-			abortController.abort();
+		// Remove previous script if exists
+		if (scriptElement) {
+			scriptElement.remove();
+			scriptElement = null;
 		}
-		const controller = new AbortController();
-		abortController = controller;
 
-		loading = true;
-		error = null;
-
-		const url = `${API_BASE}/verses/by_key/${encodeURIComponent(
-			key
-		)}?language=en&fields=text_uthmani&translations=${translationsParam}`;
-
-		try {
-			const res = await fetch(url, { signal: controller.signal });
-			if (!res.ok) {
-				throw new Error(`API error ${res.status}`);
-			}
-			const data: VerseResponse = await res.json();
-			arabicText = data.verse?.text_uthmani ?? '';
-			translationText = data.verse?.translations?.[0]?.text ?? '';
-		} catch (err: any) {
-			if (err?.name === 'AbortError') {
-				return;
-			}
-			console.error(err);
-			error = 'Unable to load verse right now.';
-			arabicText = '';
-			translationText = '';
-		} finally {
-			if (!controller.signal.aborted) {
-				loading = false;
-			}
+		// Clear container
+		const target = widgetContainer.querySelector(`#${preferences.containerId}`);
+		if (target) {
+			target.innerHTML = '';
 		}
+
+		// Create and inject script element with current preferences
+		scriptElement = document.createElement('script');
+		scriptElement.src = '/quran-embed.js';
+		scriptElement.setAttribute('data-quran-target', preferences.containerId);
+		scriptElement.setAttribute('data-quran-ayah', `${preferences.surah}:${preferences.ayah}`);
+		scriptElement.setAttribute(
+			'data-quran-translation-ids',
+			preferences.translations.map((t) => t.id).join(',')
+		);
+		scriptElement.setAttribute('data-quran-reciter-id', preferences.reciter?.toString() || '7');
+		scriptElement.setAttribute('data-quran-audio', preferences.enableAudio.toString());
+		scriptElement.setAttribute(
+			'data-quran-word-by-word',
+			preferences.enableWbwTranslation.toString()
+		);
+		scriptElement.setAttribute('data-quran-theme', preferences.theme);
+		scriptElement.setAttribute(
+			'data-quran-show-translator-names',
+			preferences.showTranslatorName.toString()
+		);
+		scriptElement.setAttribute('data-quran-show-quran-link', preferences.showQuranLink.toString());
+		scriptElement.async = true;
+
+		document.body.appendChild(scriptElement);
 	}
 
-	let mounted = false;
-	let lastKey = '';
-	onMount(() => {
-		mounted = true;
-		lastKey = fetchKey;
-		fetchVerse(verseKey, translationIds);
-	});
-
+	// Load widget when preferences change
 	$effect(() => {
-		if (!mounted) return;
-		if (fetchKey === lastKey) return;
-		lastKey = fetchKey;
-		fetchVerse(verseKey, translationIds);
+		// Track all preferences to trigger reload
+		preferences.surah;
+		preferences.ayah;
+		preferences.translations;
+		preferences.reciter;
+		preferences.enableAudio;
+		preferences.enableWbwTranslation;
+		preferences.theme;
+		preferences.showTranslatorName;
+		preferences.showQuranLink;
+
+		loadWidget();
 	});
 </script>
 
-<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px]">
+<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px] overflow-auto">
 	<h2 class="text-2xl font-semibold mb-4">Live Preview</h2>
-
-	{#if loading}
-		<p class="text-gray-600">Loading verse...</p>
-	{:else if error}
-		<p class="text-red-600">{error}</p>
-	{:else if arabicText || translationText}
-		<div class="space-y-3">
-			<p class="text-3xl leading-relaxed text-right font-semibold">{arabicText}</p>
-			<p class="text-base leading-relaxed">{@html translationText}</p>
-		</div>
-	{:else}
-		<p class="text-gray-600">Select an ayah to preview.</p>
-	{/if}
+	<div bind:this={widgetContainer}>
+		<div id={preferences.containerId}></div>
+	</div>
 </div>
