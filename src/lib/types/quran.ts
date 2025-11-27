@@ -48,4 +48,5 @@ export interface WidgetOptions {
 	showTranslatorNames: boolean;
 	showQuranLink: boolean;
 	ayah: string;
+	hasAnyTranslations: boolean;
 }

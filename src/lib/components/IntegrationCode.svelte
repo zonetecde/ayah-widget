@@ -22,7 +22,7 @@
 	}
 </script>
 
-<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px]">
+<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px] flex flex-col">
 	<div class="flex justify-between items-center mb-4">
 		<h2 class="text-lg font-semibold">Code</h2>
 		<button
@@ -32,5 +32,7 @@
 			Copy
 		</button>
 	</div>
-	<pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto"><code>{codeSnippet}</code></pre>
+	<pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto overflow-y-auto"><code
+			>{codeSnippet}</code
+		></pre>
 </div>

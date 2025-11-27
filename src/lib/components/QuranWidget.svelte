@@ -290,7 +290,7 @@
 			{/if}
 
 			<!-- Translations -->
-			{#if verse.translations && verse.translations.length > 0}
+			{#if verse.translations && verse.translations.length > 0 && options.hasAnyTranslations}
 				<div style="margin-top: 24px;">
 					{#each verse.translations as translation}
 						<div

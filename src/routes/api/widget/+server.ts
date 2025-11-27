@@ -9,7 +9,7 @@ const API_BASE = 'https://api.quran.com/api/v4';
 export const GET: RequestHandler = async ({ url }) => {
 	// Get request parameters
 	const ayah = url.searchParams.get('ayah') || '2:255';
-	const translationIds = url.searchParams.get('translations') || '20';
+	const translationIds = url.searchParams.get('translations');
 	const reciterId = url.searchParams.get('reciter') || '7';
 	const enableAudio = url.searchParams.get('audio') === 'true';
 	const enableWbw = url.searchParams.get('wbw') === 'true';
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		apiUrl.searchParams.set('words', 'true');
 		apiUrl.searchParams.set('language', 'en');
 		apiUrl.searchParams.set('fields', 'text_uthmani');
-		apiUrl.searchParams.set('translations', translationIds);
+		apiUrl.searchParams.set('translations', translationIds || '');
 		apiUrl.searchParams.set('audio', reciterId);
 		apiUrl.searchParams.set(
 			'word_fields',
@@ -39,6 +39,8 @@ export const GET: RequestHandler = async ({ url }) => {
 		const data = await response.json();
 		const verse: Verse = data.verse;
 
+		console.log(translationIds);
+
 		// Widget options
 		const options: WidgetOptions = {
 			enableAudio,
@@ -46,8 +48,11 @@ export const GET: RequestHandler = async ({ url }) => {
 			theme,
 			showTranslatorNames,
 			showQuranLink,
-			ayah
+			ayah,
+			hasAnyTranslations: translationIds ? translationIds.split(',').length > 0 : false
 		};
+
+		console.log(options);
 
 		// Render Svelte component server-side with svelte/server
 		const result = render(QuranWidget, { props: { verse, options } });

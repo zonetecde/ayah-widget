@@ -17,10 +17,7 @@
 		// Build API URL
 		const apiUrl = new URL('/api/widget', window.location.origin);
 		apiUrl.searchParams.set('ayah', `${preferences.surah}:${preferences.ayah}`);
-		apiUrl.searchParams.set(
-			'translations',
-			preferences.translations.map((t) => t.id).join(',') || '20'
-		);
+		apiUrl.searchParams.set('translations', preferences.translations.map((t) => t.id).join(','));
 		apiUrl.searchParams.set('reciter', preferences.reciter?.toString() || '7');
 		apiUrl.searchParams.set('audio', preferences.enableAudio.toString());
 		apiUrl.searchParams.set('wbw', preferences.enableWbwTranslation.toString());
@@ -66,7 +63,7 @@
 	});
 </script>
 
-<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px]">
+<div class="h-full w-full border-gray-400 border-2 rounded-lg p-4 min-w-[300px] overflow-auto">
 	<h2 class="text-2xl font-semibold mb-4">Live Preview</h2>
 	<div bind:this={widgetContainer}>
 		<div id={preferences.containerId}></div>
