@@ -12,7 +12,7 @@
 
 	<TextInput label="Container Id" bind:value={preferences.containerId} />
 
-	<AyahSelector bind:surah={preferences.surah} bind:ayah={preferences.ayah} />
+	<AyahSelector bind:surah={preferences.selectedSurah} bind:ayah={preferences.selectedAyah} />
 
 	<TranslationSelector bind:translations={preferences.translations} />
 
@@ -32,6 +32,7 @@
 
 	<div class="flex flex-col space-y-3">
 		<Switch label="Enable audio" bind:checked={preferences.enableAudio} id="enable-audio" />
+
 		<Switch
 			label="Enable wbw translation"
 			bind:checked={preferences.enableWbwTranslation}

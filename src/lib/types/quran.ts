@@ -24,6 +24,10 @@ export interface Translation {
 	id: number;
 	resource_id: number;
 	text: string;
+	resource_name?: string;
+	name?: string;
+	translator_name?: string;
+	author_name?: string;
 }
 
 export interface Audio {

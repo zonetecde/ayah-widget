@@ -209,7 +209,7 @@
 		</div>
 
 		<!-- Content -->
-		<div style="padding: 24px;">
+		<div style="padding: 12px 24px 0px 24px;">
 			<!-- Arabic Text with optional Word by Word Translation -->
 			{#if options.enableWbw && verse.words}
 				<div
@@ -304,7 +304,7 @@
                   margin-top: 8px;
                 "
 								>
-									Translation ID: {translation.resource_id}
+									— {translation.resource_name}
 								</div>
 							{/if}
 						</div>

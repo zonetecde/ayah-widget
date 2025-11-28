@@ -3,6 +3,8 @@ import { Surah } from '$lib/classes/Surah';
 import { Translation } from '$lib/classes/Translation';
 
 export type WidgetTheme = 'light' | 'dark';
+export const DEFAULT_SELECTED_SURAH = 33;
+export const DEFAULT_SELECTED_AYAH = 56;
 
 class GlobalState {
 	static readonly API_BASE = 'https://api.quran.com/api/v4';
@@ -32,8 +34,8 @@ class GlobalState {
 
 export const preferences = new (class PreferencesState {
 	containerId = $state('quran-embed-1');
-	surah = $state(33);
-	ayah = $state(56);
+	selectedSurah = $state(DEFAULT_SELECTED_SURAH);
+	selectedAyah = $state(DEFAULT_SELECTED_AYAH);
 	translations = $state<Translation[]>([]);
 	theme = $state<WidgetTheme>('light');
 	enableAudio = $state(true);

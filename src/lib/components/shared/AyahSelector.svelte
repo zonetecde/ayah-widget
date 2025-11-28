@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Surah } from '$lib/classes/Surah';
-	import { globalState } from '$lib/runes/main.svelte';
+	import { DEFAULT_SELECTED_SURAH, globalState } from '$lib/runes/main.svelte';
 	import { onMount } from 'svelte';
 
 	let selectedSurah: Surah | null = $state(null);
@@ -15,10 +15,8 @@
 
 	onMount(() => {
 		if (globalState.surahs.length === 0) {
-			surah = 33;
-			ayah = 56;
 			globalState.loadSurahs().then(() => {
-				selectedSurah = globalState.surahs[32];
+				selectedSurah = globalState.surahs[DEFAULT_SELECTED_SURAH - 1];
 			});
 		} else {
 			// Initialize selectedSurah based on current surah value

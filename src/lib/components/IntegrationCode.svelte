@@ -6,7 +6,7 @@
 <script
   src="quran-embed.js"
   data-quran-target="${preferences.containerId}"
-  data-quran-ayah="${preferences.surah}:${preferences.ayah}"
+  data-quran-ayah="${preferences.selectedSurah}:${preferences.selectedAyah}"
   data-quran-translation-ids="${preferences.translations.map((t) => t.id).join(',')}"
   data-quran-reciter-id="${preferences.reciter || ''}"
   data-quran-audio="${preferences.enableAudio}"

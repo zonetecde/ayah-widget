@@ -23,7 +23,10 @@
 		scriptElement = document.createElement('script');
 		scriptElement.src = '/quran-embed.js';
 		scriptElement.setAttribute('data-quran-target', preferences.containerId);
-		scriptElement.setAttribute('data-quran-ayah', `${preferences.surah}:${preferences.ayah}`);
+		scriptElement.setAttribute(
+			'data-quran-ayah',
+			`${preferences.selectedSurah}:${preferences.selectedAyah}`
+		);
 		scriptElement.setAttribute(
 			'data-quran-translation-ids',
 			preferences.translations.map((t) => t.id).join(',')
@@ -48,8 +51,8 @@
 	// Load widget when preferences change
 	$effect(() => {
 		// Track all preferences to trigger reload
-		preferences.surah;
-		preferences.ayah;
+		preferences.selectedSurah;
+		preferences.selectedAyah;
 		preferences.translations;
 		preferences.reciter;
 		preferences.enableAudio;

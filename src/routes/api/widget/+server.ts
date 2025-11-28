@@ -42,11 +42,46 @@ export const GET: RequestHandler = async ({ url }) => {
 		// Fix a problem with the font rendering some sukun characters incorrectly
 		const weirdSukunRegex = /[\u06DF\u06E1\u06E2\u06E3\u06E4]/g;
 		verse.text_uthmani = verse.text_uthmani.replace(weirdSukunRegex, '\u0652');
+		for (const word of verse.words ?? []) {
+			word.text_uthmani = word.text_uthmani.replace(weirdSukunRegex, '\u0652');
+		}
 
 		// Remove the footnote markers from the translations
 		for (const t of verse.translations ?? []) {
 			// rem <sup ...>...</sup> tags
 			t.text = t.text.replace(/<sup[^>]*>.*?<\/sup>/g, '');
+		}
+
+		// Enrich translations with their human-readable names
+		const translationResourceIds = (verse.translations ?? [])
+			.map((t) => t.resource_id)
+			.filter((id) => Number.isFinite(id));
+
+		if (translationResourceIds.length && verse.translations?.length) {
+			const translationsMetaRes = await fetch(`${API_BASE}/resources/translations`);
+			if (translationsMetaRes.ok) {
+				const translationsMeta = await translationsMetaRes.json();
+				const metaById = new Map<number, any>();
+				const translationIdSet = new Set(translationResourceIds);
+				for (const meta of translationsMeta.translations as any[]) {
+					if (translationIdSet.has(meta.id)) {
+						metaById.set(meta.id, meta);
+					}
+				}
+
+				verse.translations = verse.translations.map((t) => {
+					const meta = metaById.get(t.resource_id);
+					const resource_name = meta?.name || meta?.author_name || meta?.resource_name;
+					return {
+						...t,
+						resource_name,
+						name: meta?.name ?? t.name,
+						author_name: meta?.author_name ?? t.author_name
+					};
+				});
+			} else {
+				console.warn(`Translations API error: ${translationsMetaRes.status}`);
+			}
 		}
 
 		console.log(JSON.stringify(verse));
@@ -73,7 +108,7 @@ export const GET: RequestHandler = async ({ url }) => {
 			showTranslatorNames,
 			showQuranLink,
 			ayah,
-			hasAnyTranslations: translationIds ? translationIds.split(',').length > 0 : false,
+			hasAnyTranslations: translationResourceIds.length > 0,
 			surahName
 		};
 
