@@ -26,9 +26,12 @@ class GlobalState {
 	}
 
 	async loadReciters() {
-		const res = await fetch(`${GlobalState.API_BASE}/resources/reciters`);
+		const res = await fetch('/api/get-reciters');
 		const data = await res.json();
-		this.availableReciters = data.reciters.map((item: any) => new Reciter(item));
+
+		const reciters = data.reciters.map((item: any) => new Reciter(item));
+
+		this.availableReciters = reciters;
 	}
 }
 

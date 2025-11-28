@@ -37,6 +37,7 @@ export const GET: RequestHandler = async ({ url }) => {
 		}
 
 		const data = await response.json();
+
 		const verse: Verse = data.verse;
 
 		// Fix a problem with the font rendering some sukun characters incorrectly
@@ -83,8 +84,6 @@ export const GET: RequestHandler = async ({ url }) => {
 				console.warn(`Translations API error: ${translationsMetaRes.status}`);
 			}
 		}
-
-		console.log(JSON.stringify(verse));
 
 		// Fetch chapter information to include the surah name (phonetic)
 		const surahNumber = verse.chapter_id || Number.parseInt(ayah.split(':')[0] || '0', 10);
