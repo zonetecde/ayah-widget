@@ -4,7 +4,7 @@
 	let codeSnippet = $derived(`<div id="${preferences.containerId}"></div>
 
 <script
-  src="quran-embed.js"
+  src="https://ayah-widget.vercel.app/quran-embed.js"
   data-quran-target="${preferences.containerId}"
   data-quran-ayah="${preferences.selectedSurah}:${preferences.selectedAyah}"
   data-quran-translation-ids="${preferences.translations.map((t) => t.id).join(',')}"
