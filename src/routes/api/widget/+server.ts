@@ -116,7 +116,15 @@ export const GET: RequestHandler = async ({ url }) => {
 		const result = render(QuranWidget, { props: { verse, options } });
 		const html = result.body;
 
-		return json({ html, success: true });
+		return json(
+			{ html, success: true },
+			{
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Cache-Control': 'max-age=60'
+				}
+			}
+		);
 	} catch (error) {
 		console.error('Error fetching verse:', error);
 		return json(
@@ -125,7 +133,13 @@ export const GET: RequestHandler = async ({ url }) => {
 				success: false,
 				error: error instanceof Error ? error.message : 'Unknown error'
 			},
-			{ status: 500 }
+			{
+				status: 500,
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Cache-Control': 'no-store'
+				}
+			}
 		);
 	}
 };

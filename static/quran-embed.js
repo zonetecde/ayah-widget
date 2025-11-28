@@ -9,6 +9,10 @@
         return;
     }
 
+    // Resolve script URL and origin for API calls
+    const scriptUrl = new URL(currentScript.src, window.location.href);
+    const apiOrigin = currentScript.getAttribute('data-quran-origin') || scriptUrl.origin;
+
     // Get configuration from data attributes
     const config = {
         target: currentScript.getAttribute('data-quran-target'),
@@ -34,7 +38,7 @@
     container.innerHTML = '<div style="padding: 20px; text-align: center; color: #666;">Loading Quran verse...</div>';
 
     // Build API URL
-    const apiUrl = new URL('/api/widget', window.location.origin);
+    const apiUrl = new URL('/api/widget', apiOrigin);
     apiUrl.searchParams.set('ayah', config.ayah);
     apiUrl.searchParams.set('translations', config.translationIds || '20');
     apiUrl.searchParams.set('reciter', config.reciterId || '7');
