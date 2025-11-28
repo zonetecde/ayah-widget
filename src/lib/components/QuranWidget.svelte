@@ -35,7 +35,7 @@
 	<style>
 		@font-face {
 			font-family: 'UthmanicHafs';
-			src: url('/fonts/UthmanicHafs1Ver18.woff2') format('woff2');
+			src: url('https://ayah-widget.vercel.app/fonts/UthmanicHafs1Ver18.woff2') format('woff2');
 			font-weight: normal;
 			font-style: normal;
 			font-display: swap;
