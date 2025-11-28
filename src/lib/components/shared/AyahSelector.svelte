@@ -15,14 +15,17 @@
 
 	onMount(() => {
 		if (globalState.surahs.length === 0) {
-			surah = 2;
-			ayah = 255;
+			surah = 33;
+			ayah = 56;
 			globalState.loadSurahs().then(() => {
-				selectedSurah = globalState.surahs[1];
+				selectedSurah = globalState.surahs[32];
 			});
 		} else {
 			// Initialize selectedSurah based on current surah value
-			selectedSurah = globalState.surahs.find((s) => s.id === surah) || globalState.surahs[1];
+			const selectedSurahFromId: Surah | undefined = globalState.surahs.find((s) => s.id === surah);
+			if (selectedSurahFromId) {
+				selectedSurah = selectedSurahFromId;
+			}
 		}
 	});
 

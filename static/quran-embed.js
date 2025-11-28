@@ -35,7 +35,7 @@
 
     // Build API URL
     const apiUrl = new URL('/api/widget', window.location.origin);
-    apiUrl.searchParams.set('ayah', config.ayah || '2:255');
+    apiUrl.searchParams.set('ayah', config.ayah || '33:56');
     apiUrl.searchParams.set('translations', config.translationIds || '20');
     apiUrl.searchParams.set('reciter', config.reciterId || '7');
     apiUrl.searchParams.set('audio', config.audio || 'false');

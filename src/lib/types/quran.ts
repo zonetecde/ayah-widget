@@ -35,6 +35,7 @@ export interface Verse {
 	id: number;
 	verse_number: number;
 	verse_key: string;
+	chapter_id: number;
 	text_uthmani: string;
 	words?: Word[];
 	translations?: Translation[];
@@ -49,4 +50,5 @@ export interface WidgetOptions {
 	showQuranLink: boolean;
 	ayah: string;
 	hasAnyTranslations: boolean;
+	surahName?: string;
 }

@@ -32,8 +32,8 @@ class GlobalState {
 
 export const preferences = new (class PreferencesState {
 	containerId = $state('quran-embed-1');
-	surah = $state(2);
-	ayah = $state(255);
+	surah = $state(33);
+	ayah = $state(56);
 	translations = $state<Translation[]>([]);
 	theme = $state<WidgetTheme>('light');
 	enableAudio = $state(true);

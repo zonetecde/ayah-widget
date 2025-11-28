@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Verse, WidgetOptions } from '$lib/types/quran';
+	import { onMount } from 'svelte';
 
 	interface Props {
 		verse: Verse;
@@ -67,26 +68,23 @@
     "
 		>
 			<div style="display: flex; align-items: center; gap: 12px;">
-				<!-- Bismillah icon -->
-				<div
+				<!-- Quran.com icon -->
+				<img
+					src="https://quran.com/images/logo/Logo@192x192.png"
+					alt="Quran.com logo"
 					style="
-          width: 36px;
-          height: 36px;
-          background-color: {linkColor};
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-weight: bold;
-          font-size: 14px;
-        "
-				>
-					{verse.verse_number}
-				</div>
+		  width: 36px;
+		  height: 36px;
+		  border-radius: 50%;
+		"
+				/>
 				<div>
 					<div style="font-weight: 600; font-size: 14px; color: {textColor};">
-						Verse {options.ayah}
+						{#if options.surahName}
+							Surah {options.surahName}, Verse {verse.verse_number}
+						{:else}
+							Verse {options.ayah}
+						{/if}
 					</div>
 					<div style="font-size: 12px; color: {secondaryText};">
 						{verse.verse_key}
