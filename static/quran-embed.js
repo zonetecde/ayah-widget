@@ -56,6 +56,35 @@
         const audioEl = root.querySelector('[data-audio-element]');
         const playIcon = root.querySelector('[data-play-icon]');
         const pauseIcon = root.querySelector('[data-pause-icon]');
+        const menuToggle = root.querySelector('[data-menu-toggle]');
+        const menu = root.querySelector('[data-menu]');
+        const copyBtn = root.querySelector('[data-copy-verse]');
+        const verseText = root.querySelector('[data-verse-text]');
+        const translationTexts = root.querySelectorAll('[data-translation-text]');
+
+        function setMenu(open) {
+            if (!menu) return;
+            menu.style.display = open ? 'block' : 'none';
+            menu.dataset.open = open ? 'true' : 'false';
+        }
+
+        function copyVerse() {
+            const parts = [];
+            if (verseText?.textContent) {
+                parts.push(verseText.textContent.trim());
+            }
+            translationTexts.forEach((node) => {
+                if (node.textContent) {
+                    const text = node.textContent.trim();
+                    if (text) parts.push(text);
+                }
+            });
+            if (!parts.length) return;
+            const combined = parts.join('\n\n');
+            if (navigator.clipboard?.writeText) {
+                navigator.clipboard.writeText(combined).catch((err) => console.error('Copy failed', err));
+            }
+        }
 
         if (audioBtn && audioEl) {
             const update = function() {
@@ -80,6 +109,21 @@
             audioEl.addEventListener('ended', update);
 
             update();
+        }
+
+        if (menuToggle && menu) {
+            menuToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                const isOpen = menu.dataset.open === 'true';
+                setMenu(!isOpen);
+            });
+        }
+
+        if (copyBtn) {
+            copyBtn.addEventListener('click', () => {
+                copyVerse();
+                setMenu(false);
+            });
         }
     }
 

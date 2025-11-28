@@ -21,13 +21,6 @@
 
 	const audioUrl = verse.audio?.url ? `https://verses.quran.com/${verse.audio.url}` : null;
 	const translationCount = verse.translations?.length || 0;
-
-	let showMenu = $state(false);
-
-	function copyVerse() {
-		const text = `${verse.text_uthmani}\n\n${verse.translations?.map((t) => t.text).join('\n\n') || ''}`;
-		navigator.clipboard.writeText(text);
-	}
 </script>
 
 <div>
@@ -131,7 +124,7 @@
 				<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 				<!-- svelte-ignore a11y_consider_explicit_label -->
 				<button
-					onclick={() => (showMenu = !showMenu)}
+					data-menu-toggle
 					style="
           width: 36px;
           height: 36px;
@@ -155,10 +148,11 @@
 					</svg>
 				</button>
 
-				<!-- Dropdown menu -->
-				{#if showMenu}
-					<div
-						style="
+				<!-- Dropdown menu (handled by embed script for static HTML) -->
+				<div
+					data-menu
+					style="
+            display: none;
             position: absolute;
             top: 42px;
             right: 0;
@@ -169,14 +163,11 @@
             min-width: 180px;
             z-index: 10;
           "
-					>
-						<!-- svelte-ignore a11y_mouse_events_have_key_events -->
-						<button
-							onclick={() => {
-								copyVerse();
-								showMenu = false;
-							}}
-							style="
+				>
+					<!-- svelte-ignore a11y_mouse_events_have_key_events -->
+					<button
+						data-copy-verse
+						style="
               width: 100%;
               padding: 10px 16px;
               border: none;
@@ -190,21 +181,20 @@
               font-size: 14px;
               transition: background-color 0.2s;
             "
-							onmouseover={(e) => (e.currentTarget.style.backgroundColor = hoverBg)}
-							onmouseout={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-						>
-							<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-								<path
-									d="M4 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"
-								/>
-								<path
-									d="M2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"
-								/>
-							</svg>
-							Copy Verse
-						</button>
-					</div>
-				{/if}
+						onmouseover={(e) => (e.currentTarget.style.backgroundColor = hoverBg)}
+						onmouseout={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+					>
+						<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+							<path
+								d="M4 2a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H6z"
+							/>
+							<path
+								d="M2 5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-1h1v1a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1v1H2z"
+							/>
+						</svg>
+						Copy Verse
+					</button>
+				</div>
 			</div>
 		</div>
 
@@ -213,6 +203,7 @@
 			<!-- Arabic Text with optional Word by Word Translation -->
 			{#if options.enableWbw && verse.words}
 				<div
+					data-verse-text
 					style="
           display: flex;
           flex-wrap: wrap;
@@ -263,6 +254,7 @@
 			{:else}
 				<!-- Display simple Arabic text without word by word -->
 				<div
+					data-verse-text
 					style="
           font-size: 32px;
           line-height: 2;
@@ -278,7 +270,7 @@
 
 			<!-- Translations -->
 			{#if translationCount > 0 && verse.translations}
-				<div style="margin-top: 24px;">
+				<div style="margin-top: 24px;" data-translations>
 					{#each verse.translations as translation}
 						<div
 							style="
@@ -287,6 +279,7 @@
             "
 						>
 							<div
+								data-translation-text
 								style="
                 font-size: 16px;
                 line-height: 1.75;
