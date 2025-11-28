@@ -1,38 +1,48 @@
-# sv
+# Quran Widget Usage (Quick Guide)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+## What this widget is
 
-## Creating a project
+A drop-in Quran verse widget you can embed on any web page. It renders the Arabic text, optional translations, and an audio play/pause control.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Quick embed
 
-```sh
-# create a new project in the current directory
-npx sv create
+1. Add a container where the widget will render:
 
-# create a new project in my-app
-npx sv create my-app
+```html
+<div id="quran-embed-remote"></div>
 ```
 
-## Developing
+2. Include the script from your deployed domain and point it to the container with data attributes:
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```html
+<script
+	src="https://ayah-widget.vercel.app/quran-embed.js"
+	data-quran-origin="https://ayah-widget.vercel.app"
+	data-quran-target="quran-embed-remote"
+	data-quran-ayah="33:56"
+	data-quran-translation-ids="20"
+	data-quran-reciter-id="7"
+	data-quran-audio="true"
+	data-quran-word-by-word="false"
+	data-quran-theme="light"
+	data-quran-show-translator-names="false"
+	data-quran-show-quran-link="true"
+	async
+></script>
 ```
 
-## Building
+## Required attributes
 
-To create a production version of your app:
+- `data-quran-target`: the id of your container div.
+- `data-quran-ayah`: verse key in `SURAH:AYAH` format, e.g. `33:56`.
 
-```sh
-npm run build
-```
+## Optional attributes
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- `data-quran-translation-ids`: comma-separated translation ids from api.quran.com (e.g. `20`).
+- `data-quran-reciter-id`: reciter id for audio (default `7`).
+- `data-quran-audio`: `true` to show play/pause.
+- `data-quran-word-by-word`: `true` to show word-by-word translations.
+- `data-quran-theme`: `light` or `dark`.
+- `data-quran-show-translator-names`: `true` to show translator names.
+- `data-quran-show-quran-link`: `true` to show a Quran.com link.
+- `data-quran-origin`: API host for widget HTML (use your deployed origin).
