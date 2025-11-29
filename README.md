@@ -4,6 +4,19 @@
 
 A drop-in Quran verse widget you can embed on any web page. It renders the Arabic text, optional translations, and an audio play/pause control.
 
+## Development Setup
+
+### Environment Variables
+
+Create a `.env` file in the project root with the following variables:
+
+```env
+CLIENT_ID=your_client_id
+CLIENT_SECRET=your_client_secret
+END_POINT=https://oauth2.quran.foundation
+API_BASE_URL=https://apis.quran.foundation/content/api/v4
+```
+
 ## Quick embed
 
 1. Add a container where the widget will render:

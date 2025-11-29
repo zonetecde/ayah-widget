@@ -39,7 +39,9 @@ export const preferences = new (class PreferencesState {
 	containerId = $state('quran-embed-1');
 	selectedSurah = $state(DEFAULT_SELECTED_SURAH);
 	selectedAyah = $state(DEFAULT_SELECTED_AYAH);
-	translations = $state<Translation[]>([]);
+	translations = $state<Translation[]>([
+		new Translation({ id: 20, resource_id: 20, text: 'Saheeh International' })
+	]);
 	theme = $state<WidgetTheme>('light');
 	enableAudio = $state(true);
 	enableWbwTranslation = $state(false);

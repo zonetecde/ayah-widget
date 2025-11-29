@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { render } from 'svelte/server';
-import QuranWidget from '$lib/components/QuranWidget.svelte';
+import QuranWidget from '$lib/components/Widget/QuranWidget.svelte';
 import type { Verse, WidgetOptions } from '$lib/types/quran';
 
 const API_BASE = 'https://api.quran.com/api/v4';

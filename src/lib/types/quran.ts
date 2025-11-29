@@ -41,7 +41,7 @@ export interface Verse {
 	verse_key: string;
 	chapter_id: number;
 	text_uthmani: string;
-	words?: Word[];
+	words: Word[];
 	translations?: Translation[];
 	audio?: Audio;
 }

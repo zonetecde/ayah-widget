@@ -40,7 +40,7 @@
     // Build API URL
     const apiUrl = new URL('/api/widget', apiOrigin);
     apiUrl.searchParams.set('ayah', config.ayah);
-    apiUrl.searchParams.set('translations', config.translationIds || '20');
+    apiUrl.searchParams.set('translations', config.translationIds);
     apiUrl.searchParams.set('reciter', config.reciterId || '7');
     apiUrl.searchParams.set('audio', config.audio || 'true');
     apiUrl.searchParams.set('wbw', config.wordByWord || 'false');
