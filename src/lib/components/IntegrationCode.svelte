@@ -27,7 +27,7 @@
 		<h2 class="text-lg font-semibold">Code</h2>
 		<button
 			onclick={copyToClipboard}
-			class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+			class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm cursor-pointer"
 		>
 			Copy
 		</button>
