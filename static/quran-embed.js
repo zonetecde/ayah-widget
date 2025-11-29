@@ -70,15 +70,41 @@
 
         function copyVerse() {
             const parts = [];
-            if (verseText?.textContent) {
-                parts.push(verseText.textContent.trim());
+
+            // First the Surah name and verse number
+            const surahName = verseText?.dataset.surahName;
+            const verseKey = verseText?.dataset.verseKey;
+            if (surahName && verseKey) {
+                parts.push(`${surahName} (${verseKey})`);
             }
+
+            // Then the Arabic verse with Arabic-Indic numerals
+            const verseNumber = verseKey?.split(':')[1];
+            const arabicVerse = verseText?.dataset.arabicVerse;
+            if (arabicVerse && verseNumber) {
+                // Convert verse number to Arabic-Indic numerals
+                const arabicIndicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+                const arabicVerseNumber = verseNumber.split('').map(digit => {
+                    const index = parseInt(digit, 10);
+                    return arabicIndicDigits[index] || digit;
+                }).join('');
+                parts.push(`${arabicVerse} ${arabicVerseNumber}`);
+            }
+
+            // Then each translation with translator name
             translationTexts.forEach((node) => {
                 if (node.textContent) {
                     const text = node.textContent.trim();
-                    if (text) parts.push(text);
+                    if (text) parts.push(text + "\n" + "— " + node.dataset.translatorName);
                 }
             });
+
+            // Finally the Quran.com link
+            if (verseKey) {
+                parts.push('https://quran.com/' + verseKey.replace(':', '/'));
+            }
+
+            // Copy to clipboard
             if (!parts.length) return;
             const combined = parts.join('\n\n');
             if (navigator.clipboard?.writeText) {

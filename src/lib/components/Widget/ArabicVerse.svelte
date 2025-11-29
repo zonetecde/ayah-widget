@@ -7,6 +7,9 @@
 <!-- Display simple Arabic text without word by word -->
 <div
 	data-verse-text
+	data-verse-key={verse.verse_key}
+	data-surah-name={options.surahName}
+	data-arabic-verse={verse.text_uthmani}
 	style="
           display: flex;
           flex-wrap: wrap;

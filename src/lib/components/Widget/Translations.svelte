@@ -17,6 +17,7 @@
 			>
 				<div
 					data-translation-text
+					data-translator-name={translation.resource_name}
 					style="
                 font-size: 16px;
                 line-height: 1.75;
