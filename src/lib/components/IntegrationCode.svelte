@@ -14,6 +14,8 @@
   data-quran-theme="${preferences.theme}"
   data-quran-show-translator-names="${preferences.showTranslatorName}"
   data-quran-show-quran-link="${preferences.showQuranLink}"
+  data-width="${preferences.hasCustomSize ? preferences.customSize.width : ''}"
+  data-height="${preferences.hasCustomSize ? preferences.customSize.height : ''}"
   async>
 <\/script>`);
 

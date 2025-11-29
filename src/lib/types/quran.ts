@@ -55,4 +55,6 @@ export interface WidgetOptions {
 	ayah: string;
 	hasAnyTranslations: boolean;
 	surahName?: string;
+	customWidth?: string;
+	customHeight?: string;
 }

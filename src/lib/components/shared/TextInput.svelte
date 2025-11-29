@@ -1,10 +1,12 @@
 <script lang="ts">
 	let {
 		label,
-		value = $bindable()
+		value = $bindable(),
+		disabled = false
 	}: {
 		label: string;
 		value?: string;
+		disabled?: boolean;
 	} = $props();
 </script>
 
@@ -15,5 +17,6 @@
 		type="text"
 		bind:value
 		class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+		{disabled}
 	/>
 </div>

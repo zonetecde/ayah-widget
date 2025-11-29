@@ -16,6 +16,8 @@ export const GET: RequestHandler = async ({ url }) => {
 	const theme = (url.searchParams.get('theme') || 'light') as 'light' | 'dark';
 	const showTranslatorNames = url.searchParams.get('showTranslatorNames') === 'true';
 	const showQuranLink = url.searchParams.get('showQuranLink') === 'true';
+	const customWidth = url.searchParams.get('width') || undefined;
+	const customHeight = url.searchParams.get('height') || undefined;
 
 	try {
 		// Build Quran.com API URL
@@ -108,7 +110,9 @@ export const GET: RequestHandler = async ({ url }) => {
 			showQuranLink,
 			ayah,
 			hasAnyTranslations: translationResourceIds.length > 0,
-			surahName
+			surahName,
+			customWidth: customWidth,
+			customHeight: customHeight
 		};
 
 		// Render Svelte component server-side with svelte/server

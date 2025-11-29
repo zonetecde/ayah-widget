@@ -22,6 +22,27 @@
 	};
 
 	const audioUrl = verse.audio?.url ? `https://verses.quran.com/${verse.audio.url}` : null;
+
+	// Widget and height
+	const customWidthStyle = options.customWidth
+		? `width: ${options.customWidth}; max-width: ${options.customWidth};`
+		: 'max-width: 800px;';
+	const customHeightStyle = options.customHeight
+		? `max-height: ${options.customHeight}; overflow: auto;`
+		: 'overflow: hidden;';
+
+	// Container style
+	const widgetStyle = `
+		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+		background-color: ${colors.bgColor};
+		color: ${colors.textColor};
+		border: 1px solid ${colors.borderColor};
+		border-radius: 12px;
+		margin: 0 auto;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		${customWidthStyle}
+		${customHeightStyle}
+	`;
 </script>
 
 <div>
@@ -36,20 +57,7 @@
 		}
 	</style>
 
-	<div
-		class="quran-widget"
-		style="
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background-color: {colors.bgColor};
-    color: {colors.textColor};
-    border: 1px solid {colors.borderColor};
-    border-radius: 12px;
-    overflow: hidden;
-    max-width: 800px;
-    margin: 0 auto;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  "
-	>
+	<div class="quran-widget" style={widgetStyle}>
 		<Header {verse} {options} {colors} />
 
 		<!-- Content -->

@@ -43,6 +43,10 @@
 			preferences.showTranslatorName.toString()
 		);
 		scriptElement.setAttribute('data-quran-show-quran-link', preferences.showQuranLink.toString());
+		if (preferences.hasCustomSize) {
+			scriptElement.setAttribute('data-width', preferences.customSize.width);
+			scriptElement.setAttribute('data-height', preferences.customSize.height);
+		}
 		scriptElement.async = true;
 
 		document.body.appendChild(scriptElement);
@@ -60,6 +64,9 @@
 		preferences.theme;
 		preferences.showTranslatorName;
 		preferences.showQuranLink;
+		preferences.customSize.height;
+		preferences.customSize.width;
+		preferences.hasCustomSize;
 
 		loadWidget();
 	});

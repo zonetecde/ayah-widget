@@ -23,7 +23,9 @@
         wordByWord: currentScript.getAttribute('data-quran-word-by-word'),
         theme: currentScript.getAttribute('data-quran-theme') || 'light',
         showTranslatorNames: currentScript.getAttribute('data-quran-show-translator-names'),
-        showQuranLink: currentScript.getAttribute('data-quran-show-quran-link')
+        showQuranLink: currentScript.getAttribute('data-quran-show-quran-link'),
+        width: currentScript.getAttribute('data-width'),
+        height: currentScript.getAttribute('data-height')
     };
 
     // Find the target container
@@ -47,6 +49,8 @@
     apiUrl.searchParams.set('theme', config.theme);
     apiUrl.searchParams.set('showTranslatorNames', config.showTranslatorNames || 'false');
     apiUrl.searchParams.set('showQuranLink', config.showQuranLink || 'false');
+    apiUrl.searchParams.set('width', config.width || '');
+    apiUrl.searchParams.set('height', config.height || '');
 
     // Wire up the audio player interactions after HTML injection
     function wireWidgetInteractions(root) {

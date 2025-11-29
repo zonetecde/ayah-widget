@@ -18,7 +18,7 @@
 
 	<ReciterSelector bind:reciter={preferences.reciter} />
 
-	<div class="flex flex-col mb-4 mt-4">
+	<div class="flex flex-col mt-2">
 		<label class="mb-2 font-medium text-gray-700" for="theme-select">Theme</label>
 		<select
 			id="theme-select"
@@ -30,7 +30,9 @@
 		</select>
 	</div>
 
-	<div class="flex flex-col space-y-3">
+	<div class="flex flex-col space-y-1 mt-2">
+		<label class="mb-2 font-medium text-gray-700" for="theme-select">Customization</label>
+
 		<Switch label="Enable audio" bind:checked={preferences.enableAudio} id="enable-audio" />
 
 		<Switch
@@ -48,5 +50,39 @@
 			bind:checked={preferences.showQuranLink}
 			id="show-quran-link"
 		/>
+	</div>
+
+	<div class="flex flex-col space-y-1 mt-2">
+		<label class="mb-2 font-medium text-gray-700" for="theme-select">Advanced settings</label>
+
+		<!-- Width and height inputs -->
+		<Switch label="Use custom size" bind:checked={preferences.hasCustomSize} id="use-custom-size" />
+
+		<div class="flex flex-col space-y-2 mt-2" class:opacity-50={!preferences.hasCustomSize}>
+			<section
+				class="grid grid-cols-2 gap-2"
+				class:pointer-events-none={!preferences.hasCustomSize}
+			>
+				<div class="flex flex-col">
+					<label class="mb-2 font-medium text-sm text-gray-700" for="width-input">Width</label>
+					<input
+						type="text"
+						placeholder="Width (e.g., 100%, 400px)"
+						bind:value={preferences.customSize.width}
+						class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					/>
+				</div>
+				<div class="flex flex-col">
+					<label class="mb-2 font-medium text-sm text-gray-700" for="height-input">Max Height</label
+					>
+					<input
+						type="text"
+						placeholder="Height (e.g., 400px, 50vh)"
+						bind:value={preferences.customSize.height}
+						class="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					/>
+				</div>
+			</section>
+		</div>
 	</div>
 </div>

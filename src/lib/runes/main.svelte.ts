@@ -48,6 +48,8 @@ export const preferences = new (class PreferencesState {
 	showTranslatorName = $state(false);
 	showQuranLink = $state(true);
 	reciter = $state<number | null>(7);
+	customSize = $state<{ width: string; height: string }>({ width: '100%', height: '400px' });
+	hasCustomSize = $state(false);
 })();
 
 export const globalState = new GlobalState();
