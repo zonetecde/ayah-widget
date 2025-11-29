@@ -123,10 +123,9 @@
 										class="mr-2 cursor-pointer"
 									/>
 									<div class="flex flex-col flex-1 min-w-0">
-										<span class="font-medium text-gray-900 text-xs truncate"
+										<span class="font-medium text-gray-900 text-xs truncate py-1"
 											>{translation.name}</span
 										>
-										<span class="text-xs text-gray-600 truncate">{translation.author_name}</span>
 									</div>
 								</label>
 							{/each}
