@@ -4,12 +4,12 @@
 	let { verse, options, colors }: WidgetProps = $props();
 </script>
 
-<!-- Display simple Arabic text without word by word -->
 <div
 	data-verse-text
-	data-verse-key={verse.verse_key}
+	data-verse-key={verse.verseKey}
 	data-surah-name={options.surahName}
-	data-arabic-verse={verse.text_uthmani}
+	data-verse-number={verse.verseNumber}
+	data-arabic-verse={verse.textUthmani}
 	style="
           display: flex;
           flex-wrap: wrap;
@@ -22,8 +22,8 @@
           font-family: 'UthmanicHafs', 'Traditional Arabic', 'Arabic Typesetting', 'Scheherazade', serif;
         "
 >
-	{#each verse.words as word}
-		{#if word.char_type_name === 'word'}
+	{#each verse.words || [] as word}
+		{#if word.charTypeName === 'word'}
 			<div
 				style="
                 display: inline-flex;
@@ -37,7 +37,7 @@
                   font-family: 'UthmanicHafs', 'Traditional Arabic', 'Arabic Typesetting', 'Scheherazade', serif;
                 "
 				>
-					{word.text_uthmani}
+					{word.text}
 				</div>
 				{#if options.enableWbw && word.translation?.text}
 					<div

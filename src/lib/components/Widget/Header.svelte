@@ -32,13 +32,13 @@
 		<div>
 			<div style="font-weight: 600; font-size: 14px; color: {colors!.textColor};">
 				{#if options.surahName}
-					Surah {options.surahName}, Verse {verse.verse_number}
+					Surah {options.surahName}, Verse {verse.verseNumber}
 				{:else}
 					Verse {options.ayah}
 				{/if}
 			</div>
 			<div style="font-size: 12px; color: {colors!.secondaryText};">
-				{verse.verse_key}
+				{verse.verseKey}
 			</div>
 		</div>
 	</div>

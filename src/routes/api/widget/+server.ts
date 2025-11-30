@@ -2,15 +2,44 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { render } from 'svelte/server';
 import QuranWidget from '$lib/components/Widget/QuranWidget.svelte';
-import type { Verse, WidgetOptions } from '$lib/types/quran';
+import type { WidgetOptions } from '$lib/types/quran';
+import { QuranApiClient } from '$lib/server/quranApiClient';
+import type { ChapterId, VerseKey } from '@quranjs/api';
 
 const API_BASE = 'https://api.quran.com/api/v4';
+const SUKUN_VARIANTS = /[\u06DF\u06E1\u06E2\u06E3\u06E4]/g;
+const FOOTNOTE_TAGS = /<sup[^>]*>.*?<\/sup>/g;
+
+const normalizeSukun = (text?: string | null) =>
+	text ? text.replace(SUKUN_VARIANTS, '\u0652') : text;
+const parseTranslationIds = (raw: string | null) =>
+	raw
+		?.split(',')
+		.map((id) => id.trim())
+		.filter(Boolean) ?? [];
+
+const fetchVerseWords = async (ayah: string, translationIds: string[], reciterId: number) => {
+	const apiUrl = new URL(`${API_BASE}/verses/by_key/${ayah}`);
+	apiUrl.searchParams.set('words', 'true');
+	apiUrl.searchParams.set('language', 'en');
+	apiUrl.searchParams.set('fields', 'text_uthmani');
+	apiUrl.searchParams.set('translations', translationIds.join(','));
+	apiUrl.searchParams.set('audio', String(reciterId));
+	apiUrl.searchParams.set(
+		'word_fields',
+		'verse_key,location,text_uthmani,translation,transliteration,audio_url'
+	);
+
+	const res = await fetch(apiUrl);
+	if (!res.ok) return null;
+	const data = await res.json();
+	return data?.verse?.words as any[] | null;
+};
 
 export const GET: RequestHandler = async ({ url }) => {
-	// Get request parameters
 	const ayah = url.searchParams.get('ayah') || '33:56';
-	const translationIds = url.searchParams.get('translations');
-	const reciterId = url.searchParams.get('reciter') || '7';
+	const translationIds = parseTranslationIds(url.searchParams.get('translations'));
+	const reciterId = Number(url.searchParams.get('reciter') || '7');
 	const enableAudio = url.searchParams.get('audio') === 'true';
 	const enableWbw = url.searchParams.get('wbw') === 'true';
 	const theme = (url.searchParams.get('theme') || 'light') as 'light' | 'dark';
@@ -20,86 +49,70 @@ export const GET: RequestHandler = async ({ url }) => {
 	const customHeight = url.searchParams.get('height') || undefined;
 
 	try {
-		// Build Quran.com API URL
-		const apiUrl = new URL(`${API_BASE}/verses/by_key/${ayah}`);
-		apiUrl.searchParams.set('words', 'true');
-		apiUrl.searchParams.set('language', 'en');
-		apiUrl.searchParams.set('fields', 'text_uthmani');
-		apiUrl.searchParams.set('translations', translationIds || '');
-		apiUrl.searchParams.set('audio', reciterId);
-		apiUrl.searchParams.set(
-			'word_fields',
-			'verse_key,location,text_uthmani,translation,transliteration,audio_url'
-		);
+		const client = QuranApiClient.getInstance();
 
-		// Fetch from Quran.com API
-		const response = await fetch(apiUrl.toString());
-		if (!response.ok) {
-			throw new Error(`API error: ${response.status}`);
-		}
+		const verse = await client.verses.findByKey(ayah as VerseKey, {
+			reciter: reciterId,
+			words: true,
+			wordFields: {
+				textUthmani: true,
+				location: true,
+				verseKey: true
+			},
 
-		const data = await response.json();
+			translations: translationIds,
 
-		const verse: Verse = data.verse;
+			fields: { textUthmani: true },
+			translationFields: { resourceName: true, languageName: true }
+		});
 
-		// Fix a problem with the font rendering some sukun characters incorrectly
-		const weirdSukunRegex = /[\u06DF\u06E1\u06E2\u06E3\u06E4]/g;
-		verse.text_uthmani = verse.text_uthmani.replace(weirdSukunRegex, '\u0652');
-		for (const word of verse.words ?? []) {
-			word.text_uthmani = word.text_uthmani.replace(weirdSukunRegex, '\u0652');
-		}
+		console.log('VERSE', verse);
 
-		// Remove the footnote markers from the translations
-		for (const t of verse.translations ?? []) {
-			// rem <sup ...>...</sup> tags
-			t.text = t.text.replace(/<sup[^>]*>.*?<\/sup>/g, '');
-		}
+		const test = await client.audio.findVerseRecitationsByChapter('1', '11');
+		console.log('TEST', test);
 
-		// Enrich translations with their human-readable names
-		const translationResourceIds = (verse.translations ?? [])
-			.map((t) => t.resource_id)
-			.filter((id) => Number.isFinite(id));
+		verse.textUthmani = normalizeSukun(verse.textUthmani) ?? undefined;
 
-		if (translationResourceIds.length && verse.translations?.length) {
-			const translationsMetaRes = await fetch(`${API_BASE}/resources/translations`);
-			if (translationsMetaRes.ok) {
-				const translationsMeta = await translationsMetaRes.json();
-				const metaById = new Map<number, any>();
-				const translationIdSet = new Set(translationResourceIds);
-				for (const meta of translationsMeta.translations as any[]) {
-					if (translationIdSet.has(meta.id)) {
-						metaById.set(meta.id, meta);
-					}
-				}
+		const apiWords = await fetchVerseWords(ayah, translationIds, reciterId);
+		const wordsSource = apiWords && apiWords.length > 0 ? apiWords : verse.words;
+		verse.words =
+			(wordsSource
+				?.map((word, idx) => {
+					const charTypeName = word.charTypeName ?? word.char_type_name ?? '';
+					if (charTypeName !== 'word') return null;
 
-				verse.translations = verse.translations.map((t) => {
-					const meta = metaById.get(t.resource_id);
-					const resource_name = meta?.name || meta?.author_name || meta?.resource_name;
+					const text = normalizeSukun(word.text_uthmani ?? word.textUthmani ?? word.text ?? '');
+
 					return {
-						...t,
-						resource_name,
-						name: meta?.name ?? t.name,
-						author_name: meta?.author_name ?? t.author_name
+						...word,
+						id: word.id ?? idx + 1,
+						position: word.position ?? idx + 1,
+						audioUrl: word.audio_url ?? word.audioUrl ?? null,
+						verseKey: word.verse_key ?? word.verseKey,
+						charTypeName: charTypeName || 'word',
+						text: text ?? ''
 					};
-				});
-			} else {
-				console.warn(`Translations API error: ${translationsMetaRes.status}`);
+				})
+				.filter(Boolean) as any[]) ?? [];
+
+		for (const translation of verse.translations ?? []) {
+			translation.text = translation.text.replace(FOOTNOTE_TAGS, '');
+			const resourceName =
+				(translation as any).resource_name ??
+				(translation as any).resourceName ??
+				(translation as any).translator_name ??
+				(translation as any).author_name ??
+				(translation as any).name;
+			if (resourceName) {
+				(translation as any).resource_name = resourceName;
 			}
 		}
 
-		// Fetch chapter information to include the surah name (phonetic)
-		const surahNumber = verse.chapter_id || Number.parseInt(ayah.split(':')[0] || '0', 10);
-		let surahName: string | undefined;
-
-		if (Number.isFinite(surahNumber) && surahNumber > 0) {
-			const chapterResponse = await fetch(`${API_BASE}/chapters/${surahNumber}?language=en`);
-			if (chapterResponse.ok) {
-				const chapterData = await chapterResponse.json();
-				surahName = chapterData?.chapter?.name_simple as string | undefined;
-			} else {
-				console.warn(`Chapter API error: ${chapterResponse.status}`);
-			}
-		}
+		const surahNumber = Number.parseInt(verse.verseKey.split(':')[0] || '0', 10);
+		const chapter =
+			Number.isFinite(surahNumber) && surahNumber > 0
+				? await client.chapters.findById(surahNumber as ChapterId)
+				: undefined;
 
 		// Widget options
 		const options: WidgetOptions = {
@@ -109,14 +122,14 @@ export const GET: RequestHandler = async ({ url }) => {
 			showTranslatorNames,
 			showQuranLink,
 			ayah,
-			hasAnyTranslations: translationResourceIds.length > 0,
-			surahName,
+			hasAnyTranslations: (verse.translations ?? []).length > 0,
+			surahName: chapter?.nameSimple,
 			customWidth: customWidth,
 			customHeight: customHeight
 		};
 
 		// Render Svelte component server-side with svelte/server
-		const result = render(QuranWidget, { props: { verse, options } });
+		const result = render(QuranWidget, { props: { verse: verse as any, options } });
 		const html = result.body;
 
 		return json(

@@ -40,7 +40,7 @@
 		>
 			<option value={null}>Select reciter</option>
 			{#each globalState.availableReciters as r (r.id)}
-				<option value={r.id} disabled={r.id !== 7 && r.id !== 2}>{r.name}</option>
+				<option value={r.id}>{r.name}</option>
 			{/each}
 		</select>
 	{/if}

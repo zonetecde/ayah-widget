@@ -1,28 +1,25 @@
 export interface Word {
 	id: number;
 	position: number;
-	audio_url: string | null;
-	char_type_name: string;
-	verse_key: string;
-	location: string;
-	text_uthmani: string;
-	text_indopak: string;
-	line_number: number;
-	page_number: number;
+	audioUrl: string | null;
+	charTypeName: string;
+	codeV1: string;
+	pageNumber: number;
+	lineNumber: number;
 	text: string;
 	translation?: {
 		text: string;
-		language_name: string;
+		languageName: string;
 	};
 	transliteration?: {
 		text: string;
-		language_name: string;
+		languageName: string;
 	};
 }
 
 export interface Translation {
 	id: number;
-	resource_id: number;
+	resourceId: number;
 	text: string;
 	resource_name?: string;
 	name?: string;
@@ -37,11 +34,17 @@ export interface Audio {
 
 export interface Verse {
 	id: number;
-	verse_number: number;
-	verse_key: string;
-	chapter_id: number;
-	text_uthmani: string;
-	words: Word[];
+	verseNumber: number;
+	verseKey: string;
+	hizbNumber?: number;
+	rubElHizbNumber?: number;
+	rukuNumber?: number;
+	manzilNumber?: number;
+	sajdahNumber?: number | null;
+	textUthmani?: string;
+	pageNumber?: number;
+	juzNumber?: number;
+	words?: Word[];
 	translations?: Translation[];
 	audio?: Audio;
 }

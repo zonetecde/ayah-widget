@@ -29,7 +29,7 @@ class GlobalState {
 		const res = await fetch('/api/get-reciters');
 		const data = await res.json();
 
-		const reciters = data.reciters.map((item: any) => new Reciter(item));
+		const reciters = data.map((item: any) => new Reciter(item));
 
 		this.availableReciters = reciters;
 	}
